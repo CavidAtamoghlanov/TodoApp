@@ -29,4 +29,9 @@ public class TokenService : ITokenService
 
         return new JwtSecurityTokenHandler().WriteToken(jwtAccessToken);
     }
+
+    public string GenerateRefreshToken()
+    {
+        return Guid.NewGuid().ToString().ToLower();
+    }
 }
