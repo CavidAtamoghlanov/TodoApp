@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TodoApp.BackgroundServices;
 
 namespace TodoApp.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class TodoController : ControllerBase
 {
     [HttpGet("GetAll")]

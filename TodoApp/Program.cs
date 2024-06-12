@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TodoApp.BackgroundServices;
 using TodoApp.Contexts;
 using TodoApp.Models.Entities.Concretes;
 using TodoApp.Services.Commons;
@@ -15,7 +16,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+//builder.Services.AddHostedService<MyBackGroundService>();
+
+
+
+
+builder.Services.AddHostedService<SomeBackGroundService>();
+
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("default"));
 });
@@ -26,13 +34,14 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/api/Auth/Login";
-});
+
 
 // Add Auth JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters()
@@ -88,6 +97,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("allowed");
 
 app.UseAuthentication();
 app.UseAuthorization();
